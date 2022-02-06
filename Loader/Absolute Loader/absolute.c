@@ -1,10 +1,93 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+
+char *sub_string(char *str, int s, int e)
+{
+    int i = 0;
+    char *res = malloc(e * sizeof(char));
+
+    while (i < e)
+    {
+        *(res + i) = *(str + s + i);
+        i++;
+    }
+    *(res + i) = '\0';
+
+    return res;
+}
+
+char *name_parse(char *str)
+{
+    int i = 0;
+    int e = strlen(str);
+    while (i < e)
+    {
+        if (isdigit(str[i + 1]))
+        {
+            break;
+        }
+        i++;
+    }
+
+    char *res = sub_string(str, 1, i);
+    return res;
+}
+
+void text_record(char *rec, FILE *file)
+{
+    char *start;
+    int length;
+    char *bit;
+    char *temp = malloc(sizeof(char) * 10);
+    start = sub_string(rec, 1, 6);
+    length = (int)strtol(sub_string(rec, 7, 2), NULL, 16);
+
+    int i = 9;
+    int update, len;
+    char m[10];
+
+    update = (int)strtol(start, NULL, 16);
+
+    while (length)
+    {
+
+        sprintf(m, "%x", update);
+        len = 6 - strlen(m);
+        while (len)
+        {
+            fprintf(file, "%s", "0");
+            len--;
+        }
+        fprintf(file, "%s", m);
+        bit = sub_string(rec, i, 2);
+        fprintf(file, "\t%s\n", bit);
+        i += 2;
+        length--;
+        update++;
+    }
+
+    fprintf(file, "\n");
+}
+
+char *start_record(char *rec)
+{
+    char *name, *start, *length;
+    name = name_parse(rec);
+    printf("\n - Name Of the program  : %s", name);
+    start = sub_string(rec, strlen(name) + 2, 6);
+    printf("\n - Start Address Of the program  : %s", start);
+    length = sub_string(rec, strlen(name) + 8, 6);
+    printf("\n - Length Of the program  : %s", length);
+    return start;
+}
 
 void main()
 {
     FILE *obj, *out;
     char rec[200];
+    char *st_addr;
     obj = fopen("obj.txt", "r");
     out = fopen("out.txt", "w");
 
@@ -14,13 +97,29 @@ void main()
         printf("\nThe Object File Does not exist in current directory.....\nTerminating ..............");
         exit(1);
     }
+    else
+    {
+        printf("\nThe Object File Sucessfully readed - >\n");
+    }
 
     // check each record whether it is text record or header record or end record
     fscanf(obj, "%s", rec);
 
-    while (rec[0] != "E")
+    int i = 0;
+
+    while (rec[0] != 'E')
     {
+
+        if (rec[0] == 'H')
+        {
+            st_addr = start_record(rec);
+        }
+        else if (rec[0] == 'T')
+        {
+            text_record(rec, out);
+        }
+        fscanf(obj, "%s", rec);
     }
-    fscanf(obj, "%s", rec);
-    printf("\n%s", rec);
+    printf("\n\n  -----  All Text Records Allocated and Saved To Output File  -----  ", rec);
+    exit(0);
 }
