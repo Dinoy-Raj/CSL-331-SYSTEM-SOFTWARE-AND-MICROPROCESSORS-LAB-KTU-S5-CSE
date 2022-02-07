@@ -54,7 +54,7 @@ void text_record(char *rec, FILE *file)
     {
 
         sprintf(m, "%x", update);
-        len = 6 - strlen(m);
+        len = 4 - strlen(m);
         while (len)
         {
             fprintf(file, "%s", "0");
@@ -83,7 +83,7 @@ char *start_record(char *rec)
     return start;
 }
 
-void main()
+int main()
 {
     FILE *obj, *out;
     char rec[200];
