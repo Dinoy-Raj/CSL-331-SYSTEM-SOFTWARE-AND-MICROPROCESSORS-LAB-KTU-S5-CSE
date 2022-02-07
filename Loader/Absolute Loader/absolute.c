@@ -38,29 +38,18 @@ char *name_parse(char *str)
 void text_record(char *rec, FILE *file)
 {
     char *start;
-    int length;
+    int length, update, i = 9;
     char *bit;
     char *temp = malloc(sizeof(char) * 10);
     start = sub_string(rec, 1, 6);
     length = (int)strtol(sub_string(rec, 7, 2), NULL, 16);
-
-    int i = 9;
-    int update, len;
-    char m[10];
 
     update = (int)strtol(start, NULL, 16);
 
     while (length)
     {
 
-        sprintf(m, "%x", update);
-        len = 6 - strlen(m);
-        while (len)
-        {
-            fprintf(file, "%s", "0");
-            len--;
-        }
-        fprintf(file, "%s", m);
+        fprintf(file, "%06x", update);
         bit = sub_string(rec, i, 2);
         fprintf(file, "\t%s\n", bit);
         i += 2;
