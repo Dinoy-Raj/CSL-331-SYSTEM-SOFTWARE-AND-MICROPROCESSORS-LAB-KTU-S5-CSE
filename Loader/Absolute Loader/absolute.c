@@ -18,6 +18,8 @@ char *sub_string(char *str, int s, int e)
     return res;
 }
 
+
+
 char *name_parse(char *str)
 {
     int i = 0;
@@ -34,6 +36,8 @@ char *name_parse(char *str)
     char *res = sub_string(str, 1, i);
     return res;
 }
+
+
 
 void text_record(char *rec, FILE *file)
 {
@@ -60,16 +64,18 @@ void text_record(char *rec, FILE *file)
     fprintf(file, "\n");
 }
 
-char *start_record(char *rec)
+void start_record(char *rec)
 {
     char *name, *start, *length;
+
     name = name_parse(rec);
     printf("\n - Name Of the program  : %s", name);
+
     start = sub_string(rec, strlen(name) + 2, 6);
     printf("\n - Start Address Of the program  : %s", start);
+
     length = sub_string(rec, strlen(name) + 8, 6);
     printf("\n - Length Of the program  : %s", length);
-    return start;
 }
 
 int main()
@@ -77,6 +83,7 @@ int main()
     FILE *obj, *out;
     char rec[200];
     char *st_addr;
+    int start_addr;
     obj = fopen("obj.txt", "r");
     out = fopen("out.txt", "w");
 
@@ -94,14 +101,12 @@ int main()
     // check each record whether it is text record or header record or end record
     fscanf(obj, "%s", rec);
 
-    int i = 0;
-
     while (rec[0] != 'E')
     {
 
         if (rec[0] == 'H')
         {
-            st_addr = start_record(rec);
+            start_record(rec);
         }
         else if (rec[0] == 'T')
         {
